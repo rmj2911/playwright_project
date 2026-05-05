@@ -14,6 +14,8 @@ This project is a portfolio-ready UI test automation framework built with Python
 - Stores test data separately in JSON for easier maintenance.
 - Runs automatically in GitHub Actions on push and pull request events.
 - Captures Playwright traces, videos, and screenshots for failed test debugging.
+- Includes `AGENTS.md` for repository-specific AI coding guidance.
+- Includes a Cursor skill for turning selected UI elements into reusable locator contracts.
 
 ## Test Coverage
 
@@ -46,6 +48,10 @@ This framework separates test intent from page implementation details:
 ```text
 .
 ├── .github/workflows/              # GitHub Actions workflow
+├── .cursor/skills/                  # Cursor project skills
+│   └── we-ui-locators-selector/
+│       └── skill.md                 # Stable Playwright locator contract guidance
+├── AGENTS.md                        # AI agent repository guidance
 ├── framework/
 │   ├── config/env_selection.py     # Env-based URL selection
 │   ├── data/test_data_planet_name.json
@@ -132,6 +138,24 @@ The default configuration is managed in `pytest.ini`:
 addopts = --browser=chromium --tracing=on --video=retain-on-failure --screenshot=only-on-failure
 ```
 
+## Agent and Skill Guidance
+
+This repo includes `AGENTS.md` to document the project structure, test stack, naming conventions, required implementation patterns, and anti-patterns for AI-assisted development. The guidance keeps future changes aligned with the existing pytest, Playwright, Page Object Model, fixture, config, and test-data patterns.
+
+The project also includes `.cursor/skills/we-ui-locators-selector/skill.md`, a Cursor skill for extracting stable Playwright locators from selected browser elements and saving them as reusable locator contracts. Use this skill when selected UI element data is available in chat and a clean locator contract is needed before adding or updating page objects.
+
+When adding UI automation:
+
+- Add tests under `tests/` with names ending in `_test.py` and test functions prefixed with `test_`.
+- Use `get_url()` from `framework.config.env_selection` instead of hardcoding environment URLs.
+- Navigate through `BasePage.navigate(url)`.
+- Keep selectors and reusable actions in page objects under `framework/pages/`.
+- Expose new page objects through `framework/fixtures/pages_fixture.py` when tests need them.
+- Use Playwright `expect` assertions against locators.
+- Prefer stable locators in this order: `getByTestId()`, `getByRole()`, `getByLabel()`, `getByPlaceholder()`, `getByText()`, then CSS or XPath only as a last resort.
+- Use clear semantic locator names, such as `planet_name_input`, `submit_button`, or `status_message`.
+- Flag weak selector evidence instead of inventing unsupported selectors.
+
 ## Environment Selection
 
 Target URL is selected in `framework/config/env_selection.py`:
@@ -164,6 +188,8 @@ The workflow:
 - `framework/pages/planets_page.py`: page object for planet form interactions.
 - `framework/pages/system_checks_page.py`: page object for system check interactions.
 - `framework/fixtures/pages_fixture.py`: shared fixture that exposes page objects to tests.
+- `AGENTS.md`: repository guidance for AI agents and contributors.
+- `.cursor/skills/we-ui-locators-selector/skill.md`: Cursor skill for reusable locator contracts.
 - `pytest.ini`: pytest and Playwright runtime options.
 
 ## Troubleshooting
